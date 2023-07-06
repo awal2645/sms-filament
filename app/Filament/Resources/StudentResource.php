@@ -20,12 +20,14 @@ use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Collection;
+use Filament\Tables\Filters\SelectFilter;
+
 
 class StudentResource extends Resource
 {
     protected static ?string $model = Student::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationGroup = 'Academic Mangement';
+    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
 
     public static function form(Form $form): Form
     {
@@ -78,7 +80,7 @@ class StudentResource extends Resource
               
             ])
             ->filters([
-                //
+                SelectFilter::make('class_id')->relationship('class', 'name')
             ])
             ->actions([Tables\Actions\ViewAction::make(), Tables\Actions\EditAction::make(),  Tables\Actions\DeleteAction::make()])
             ->bulkActions([Tables\Actions\DeleteBulkAction::make(),
@@ -102,5 +104,9 @@ class StudentResource extends Resource
             'view' => Pages\ViewStudent::route('/{record}'),
             'edit' => Pages\EditStudent::route('/{record}/edit'),
         ];
+    }
+    protected static function getNavigationBadge(): ?string
+    {
+        return Student::count();
     }
 }

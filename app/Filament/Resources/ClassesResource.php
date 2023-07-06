@@ -6,6 +6,7 @@ use App\Filament\Resources\ClassesResource\Pages;
 use App\Filament\Resources\ClassesResource\RelationManagers;
 use App\Models\Classes;
 use Filament\Forms;
+use Filament\Forms\Components\Card;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
@@ -20,30 +21,34 @@ use Filament\Tables\Columns\TextColumn;
 class ClassesResource extends Resource
 {
     protected static ?string $model = Classes::class;
-
+    protected static ?string $navigationGroup = 'Academic Mangement';
     protected static ?string $navigationIcon = 'heroicon-o-collection';
     public static function form(Form $form): Form
     {
         return $form->schema([
-            TextInput::make('name')
-                ->required()
-                ->autofocus()
-                ->unique()
-                ->placeholder('Enter a class Name'),
+            Card::make()->schema([
+                TextInput::make('name')
+                    ->required()
+                    ->autofocus()
+                    ->unique(ignoreRecord: true)
+                    ->placeholder('Enter a class Name'),
+            ]),
         ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([TextColumn::make('name')])
+            ->columns([
+                TextColumn::make('name'),
+                TextColumn::make('section.name')
+                    ->sortable()
+                    ->searchable(),
+            ])
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(), 
-                Tables\Actions\DeleteAction::make()
-                ])
+            ->actions([Tables\Actions\EditAction::make(), Tables\Actions\DeleteAction::make()])
             ->bulkActions([Tables\Actions\DeleteBulkAction::make()]);
     }
 
@@ -61,5 +66,9 @@ class ClassesResource extends Resource
             'create' => Pages\CreateClasses::route('/create'),
             'edit' => Pages\EditClasses::route('/{record}/edit'),
         ];
+    }
+    protected static function getNavigationBadge(): ?string
+    {
+        return Classes::count();
     }
 }
