@@ -3,9 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SectionResource\Pages;
-use App\Filament\Resources\SectionResource\RelationManagers;
 use App\Models\Section;
-use Filament\Forms;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -14,8 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+
 
 class SectionResource extends Resource
 {
@@ -30,7 +27,6 @@ class SectionResource extends Resource
                 TextInput::make('name')
                     ->required()
                     ->autofocus()
-                    ->unique(ignoreRecord: true)
                     ->placeholder('Enter a Section Name'),
                 Select::make('class_id')->relationship('class', 'name'),
             ]),

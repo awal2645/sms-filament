@@ -15,6 +15,7 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
@@ -36,17 +37,16 @@ class StudentResource extends Resource
                 TextInput::make('name')
                     ->required()
                     ->autofocus()
-                    ->unique()
                     ->placeholder('Enter  Name'),
                 TextInput::make('email')
                     ->required()
                     ->autofocus()
-                    ->unique()
+                    ->unique(ignoreRecord: true)
                     ->placeholder('Enter Email'),
                 TextInput::make('phone_number')
                     ->required()
                     ->tel()
-                    ->unique()
+                    ->unique(ignoreRecord: true)
                     ->placeholder('Enter Phone Number'),
                 TextInput::make('address')
                     ->required()
@@ -82,9 +82,18 @@ class StudentResource extends Resource
             ->filters([
                 SelectFilter::make('class_id')->relationship('class', 'name')
             ])
-            ->actions([Tables\Actions\ViewAction::make(), Tables\Actions\EditAction::make(),  Tables\Actions\DeleteAction::make()])
+            ->actions([
+                Tables\Actions\ViewAction::make(), 
+                Tables\Actions\EditAction::make(), 
+                Tables\Actions\DeleteAction::make(),
+                Action::make('Download Pdf')
+                ->icon('heroicon-o-document-download')
+                ->url(fn(Student $record) => route('student.pdf.download',$record))
+                ->openUrlInNewTab(),
+
+                 ])
             ->bulkActions([Tables\Actions\DeleteBulkAction::make(),
-            BulkAction::make('Export')->label('Export Selected')->icon('heroicon-o-document-download')
+            BulkAction::make('Export')->label('Export To  Excel File ')->icon('heroicon-o-document-download')
             ->action(fn (Collection $records) => (new StudentExport($records))->download('students.xlsx'))
         ]);
     }
